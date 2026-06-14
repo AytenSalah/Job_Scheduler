@@ -8,12 +8,21 @@
             "args": [
                 "-std=c++17",
                 "-g",
-                "-o", "${workspaceFolder}/build/MiniCloudStorage.exe",
-                "${workspaceFolder}/src/main.cpp",
-                "${workspaceFolder}/src/repositories/FileRepository.cpp",
-                "-I${workspaceFolder}/json/single_include",
+                "-o", "${workspaceFolder}/build/JobScheduler.exe",
+                "${workspaceFolder}/Src/CrowTest.cpp",
+                "${workspaceFolder}/Src/Controller/Controller.cpp",
+                "${workspaceFolder}/Src/database/database.cpp",
+                "${workspaceFolder}/Src/Job/Job.cpp",
+                "${workspaceFolder}/sqlite3/sqlite3.o",
                 "-I${workspaceFolder}/crow/include",
-                "-I${workspaceFolder}/src"
+                "-I${workspaceFolder}/asio/asio/include",
+                "-I${workspaceFolder}/sqlite3",
+                "-I${workspaceFolder}/Src/Job",
+                "-I${workspaceFolder}/Src/database",
+                "-I${workspaceFolder}/Src/Controller",
+                "-I${workspaceFolder}/Src",
+                "-lws2_32",
+                "-lmswsock"
             ],
             "group": {
                 "kind": "build",

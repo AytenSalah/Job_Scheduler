@@ -60,8 +60,11 @@ int status_to_int(Status status) {
     case COMPLETED:
         return 3;
         break;
-    case CANCELED:
+    case FAILED:
         return 4;
+        break;
+    case CANCELED:
+        return 5;
         break;
     default:
         return 0;

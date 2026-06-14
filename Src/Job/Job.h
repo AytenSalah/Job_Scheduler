@@ -4,7 +4,6 @@
 #include <optional>
 #include "sqlite3.h"
 #include "crow/crow_all.h"
-
 using namespace std;
 
 enum Status { ACTIVE, PAUSED, RUNNING, COMPLETED, FAILED, CANCELED };

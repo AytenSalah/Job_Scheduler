@@ -5,7 +5,7 @@
             "name": "Build and Debug",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/MiniCloudStorage.exe",
+            "program": "${workspaceFolder}/build/JobScheduler.exe",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
