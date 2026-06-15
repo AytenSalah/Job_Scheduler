@@ -11,11 +11,28 @@ void root_route(const crow::request& req, crow::response& res)
 void create_task_route(sqlite3* DB, const crow::request& req, crow::response& res)
 {
     auto body = crow::json::load(req.body);
-    Job job = create_job_from_json(body);
-    job.id = insert_job(DB, job);
+    if(!body)
+    {
+        res.body = 400;
+        res.write("Invalid Json Body");
+        res.end();
+        return;
+    }
 
-    res.write("Object saved in Database correctly..");
-    res.end();
+    std::string error;
+    Job job = create_job(Db, body , error);
+
+    if(job.id = -1)
+    {
+        res.body = 400;
+        res.write(error);
+    }
+    else
+    {
+        res.body = 200;
+        res.write("Job created Successfully with id " + std::to_string(job.id));
+    }
+    res.end;
 }
 
 crow::response delete_task_route(sqlite3* DB, int id)
