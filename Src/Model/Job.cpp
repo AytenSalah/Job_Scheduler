@@ -159,34 +159,3 @@ void print_all_jobs(vector<Job> jobs)
     }
     cout << "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&" << endl;
 }
-/*
-Job create_job_from_json(const crow::json::rvalue& body)
-{
-    Job job;
-    job.name = body["name"].s();
-    job.status = int_to_status(body["status"].i());
-    job.next_run_time = body["next_run_time"].i();
-    job.interval_seconds;
-    if (!body.has("interval_seconds") || body["interval_seconds"].t() == crow::json::type::Null)
-    {
-        job.interval_seconds = nullopt;
-    }
-    else
-    {
-        job.interval_seconds = static_cast<long long>(body["interval_seconds"].i());
-    }
-    job.cron_expr;
-    if (!body.has("cron_expr") || body["cron_expr"].t() == crow::json::type::Null) {
-        job.cron_expr = nullopt;
-    }
-    else {
-        job.cron_expr = body["cron_expr"].s();
-    }
-    job.type = int_to_type(body["type"].i());
-    job.payload = body["payload"].s();
-    job.retry_count = body["retry_count"].i();
-    job.max_retries = body["max_retries"].i();
-
-    return job;
-}
-*/

@@ -34,4 +34,3 @@ string status_to_string(Status status);
 
 void print_job_info(const Job& job);
 void print_all_jobs(vector<Job> jobs);
-Job create_job_from_json(const crow::json::rvalue& body);
