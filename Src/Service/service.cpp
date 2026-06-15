@@ -1,6 +1,7 @@
 #include "service.h"
 #include "database.h"
-#include "ctime"
+#include <ctime>
+#include "croncpp.h"
 
 //AC7: Invalid schedule input is rejected with a clear error response.
 bool validate_job_input(const crow::json::rvalue &body, std::string &out_error)
@@ -63,19 +64,57 @@ bool validate_job_input(const crow::json::rvalue &body, std::string &out_error)
         out_error = "The Cron expression is required and must be a non-empty String";
         return false;
         }
+
+        std::string cron_err;
+        if(!is_valid_cron(body["cron_expr"].s(), cron_err))
+        {
+            out_error = "Invalid cron expression " + cron_err;
+            return false;
+        }
     }
 
     return true;
 }
 
-long long compute_next_run_time(int type, long long now, std::optional<int> interval_seconds, long long client_next_run_time)
+bool is_valid_cron(const std::string &cron_expr, std::string &out_error)
 {
-    if(type == 0)
+    try
+    {
+        std::string full_expr = "0" + cron_expr ;
+        cron::make_cron(full_expr);
+        retrun true;
+    }
+    catch(const cron::bad_cronexpr& e)
+    {
+        out_error = e.what();
+        return false;
+    }
+
+    return true;
+    
+}
+
+long long compute_cron_next_run(const std::string &cron_expr, long long now)
+{
+    std::string full_expr = "0" + cron_expr;
+    cron::cronexpr cex = cron::make_cron(full_expr);
+
+    time_t now_t = (time_t)now;
+    time_t next_t = cron::cron_next(cex, now_t);
+
+    return (long long)next_t;
+}
+
+
+
+long long compute_next_run_time(int type, long long now, std::optional<int> interval_seconds,std::optional<std::string> cron_expr, long long client_next_run_time)
+{
+    if(type == 0) // One_time
      return client_next_run_time;
-    if(type == 1)
+    if(type == 1) // Recurring 
      return now + interval_seconds.value();
-    if(type == 2)
-     return -1;
+    if(type == 2) // Cron_Expression
+     return compute_cron_next_run(cron_expr.value() , now);
 
     return -1;
 }
@@ -118,8 +157,7 @@ Job create_job(sqlite3* DB, const crow::json::rvalue& body, std::string& out_err
                        : 3;
 
     int type = body["type"].i();
-    job.next_run_time = compute_next_run_time(type, time(nullptr), job.interval_seconds, client_next_run_time);
-
+    job.next_run_time = compute_next_run_time(type, time(nullptr), job.interval_seconds, job.cron_expr, client_next_run_time);
     job.id = insert_job(DB, job);
     return job;
 }
