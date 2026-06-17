@@ -106,7 +106,6 @@ long long compute_cron_next_run(const std::string &cron_expr, long long now)
 }
 
 
-
 long long compute_next_run_time(int type, long long now, std::optional<int> interval_seconds,std::optional<std::string> cron_expr, long long client_next_run_time)
 {
     if(type == 0) // One_time
@@ -162,3 +161,7 @@ Job create_job(sqlite3* DB, const crow::json::rvalue& body, std::string& out_err
     return job;
 }
 
+vector<Job> get_due_jobs(sqlite* DB , long long now)
+{
+    return select_due_jobs(DB, now);
+}

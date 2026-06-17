@@ -4,6 +4,7 @@
 #include <optional>
 #include <ctime>
 #include "Job.h"
+#include "database.h
 
 //AC7: Invalid schedule input is rejected with a clear error response.
 bool validate_job_input(const crow::json::rvalue& body, std::string& out_error);
@@ -18,3 +19,5 @@ Job create_job(sqlite3* DB, const crow::json::rvalue& body, std::string& out_err
 
 bool is_valid_cron(const std::string& cron_expr, std::string& out_error);
 long long compute_cron_next_run(const std::string& cron_expr, long long now);
+
+vector<Job> get_due_jobs(sqlite3* DB , long long now);

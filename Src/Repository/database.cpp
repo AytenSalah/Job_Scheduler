@@ -1,4 +1,5 @@
 #include "database/database.h"
+#include "database.h"
 
 int create_DB(const char* filename, sqlite3** DB)
 {
@@ -132,7 +133,7 @@ vector<Job> select_all_jobs(sqlite3* DB)
 
         jobs.push_back(newJob);
     }
-    cout << "object info retreived successfully" << endl;
+    cout << "Jobs info retreived successfully" << endl;
     sqlite3_finalize(stmt);
     return jobs;
 }
@@ -455,4 +456,45 @@ bool reset_retry_count(sqlite3* DB, int id)
         return false;
     }
     return true;
+}
+
+vector<Job> select_due_jobs(sqlite3* DB, long long now)
+{
+    sqlite3_stmt* stmt;
+    vector<Job> jobs;
+    const char* sql = "SELECT * FROM jobs WHERE status = ? AND next_run_time <= ?;";
+
+    sqlite3_prepare_v2(DB, sql, -1, &stmt, NULL);
+
+    sqlite3_bind_int(stmt, 1, ACTIVE);
+    sqlite3_bind_int64(stmt, 2, now);
+
+    while (sqlite3_step(stmt) == SQLITE_ROW)
+    {
+        Job newJob;
+        newJob.id = sqlite3_column_int(stmt, 0);
+        newJob.name = (char*)sqlite3_column_text(stmt, 1);
+        newJob.type = int_to_type(sqlite3_column_int(stmt, 2));
+        newJob.status = int_to_status(sqlite3_column_int(stmt, 3));
+        newJob.next_run_time = sqlite3_column_int64(stmt, 4);
+
+        if (sqlite3_column_type(stmt, 5) == SQLITE_NULL)
+            newJob.interval_seconds = nullopt;
+        else
+            newJob.interval_seconds = sqlite3_column_int(stmt, 5);
+
+        if (sqlite3_column_type(stmt, 6) == SQLITE_NULL)
+            newJob.cron_expr = nullopt;
+        else
+            newJob.cron_expr = string((char*)sqlite3_column_text(stmt, 6));
+
+        newJob.payload = (char*)sqlite3_column_text(stmt, 7);
+        newJob.retry_count = sqlite3_column_int(stmt, 8);
+        newJob.max_retries = sqlite3_column_int(stmt, 9);
+
+        jobs.push_back(newJob);
+    }
+
+    sqlite3_finalize(stmt);
+    return jobs;
 }

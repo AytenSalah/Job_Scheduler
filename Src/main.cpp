@@ -9,6 +9,9 @@
 #include <sqlite3.h>
 #include "crow/crow_all.h"
 #include <asio.hpp>
+#include "Scheduler/Scheduler.h"  // add this
+#include <thread>                  // add this
+#include <atomic>  
 
 using namespace std;
 using namespace asio;
@@ -742,11 +745,22 @@ int main()
 
 	const char* dir = "jobs.db";
 	sqlite3* DB = NULL;
+	sqlite3_config(SQLITE_CONFIG_SERIALIZED);
 	create_DB(dir, &DB);
 	create_table(DB);
+	
+	std::atomic<bool> running(true);
+    std::thread scheduler_thread(scheduler_loop, DB, std::ref(running));
+	
 	crow::SimpleApp app;
 	register_routes(app, DB);
 	app.port(3000).multithreaded().run();
+	
+	running = false;
+    scheduler_thread.join();
+
+	return 0 ;
+
 
 	/*
 	Job job2;

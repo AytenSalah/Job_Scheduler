@@ -17,6 +17,7 @@
 #include "asio/execution/scheduler.hpp"
 
 #include "../unit_test.hpp"
+#include "scheduler.h"
 
 #if !defined(ASIO_NO_DEPRECATED)
 

@@ -21,3 +21,4 @@ bool resume_job(sqlite3* DB, int id);
 bool update_next_run_time(sqlite3* DB, int id, long long new_next_run_time);
 bool increment_retry_count(sqlite3* DB, int id);
 bool reset_retry_count(sqlite3* DB, int id);
+vector<Job> select_due_jobs(sqlite3* DB , long long now);
